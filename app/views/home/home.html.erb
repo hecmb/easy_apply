@@ -1,0 +1,66 @@
+<div id="home" style="text-align:center;overflow:auto;height:auto;">
+
+ <%# NOTICES %>
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
+
+<%# First PAGE %>
+
+
+<h2>Welcome! Easy Hiring by Candidate Hector Moreno Bravo is in Session! </h2>
+<% if !user_signed_in? %>
+		<p>Please <%= link_to "Sign In", new_user_session_path %> or <%= link_to "Sign Up", new_user_registration_path %>  </p>
+<% else %>
+		<p><%= link_to "Sign Out", destroy_user_session_path, :method => :delete %> </p>
+<% end %>
+
+
+
+
+  <%# FOR EMPLOYERS %>
+
+	<% if user_signed_in? && current_user.employer? %>
+		<h3> All Applicants </h3>
+		<div class="panel panel-default">
+		<% User.where(applicant: true).each do |a| %>
+  			<div class="panel-heading">
+  				<ul style="display:inline !important;">
+			<% if Applicant.where({company_id: current_user.id, applicant_id: a.id}).exists? %>
+
+  					<li ><p><b>Name:</b> <%= a.name %></p></li>
+  					<%#<li><p><b>Email:</b> <%= link_to a.email, "#" ></p></li>%>
+  				<p> --------------------------------------- </p>
+  			</br>
+
+  				</ul>
+  			</br>
+  			<% end %>
+
+  		<% end %>
+
+  <%# FOR APPLICANTS %>
+
+
+	<% elsif user_signed_in? && current_user.applicant? %>
+
+		<h3> All Companies Hiring </h3>
+		<% User.where(employer: true).each do |e| %>
+		  			</br>
+
+			<% if !Applicant.where({company_id: e.id, applicant_id: current_user.id}).exists? %>
+  			<ul style="display:inline !important;">
+  				<li><b>Employer:</b> <%= e.name %>
+
+  				<%= link_to "Apply", add_applicant_path(
+  			:name => current_user.name, :email => current_user.email, applicant_id: current_user.id, 
+  			:company_id => e.id), :style => "maring:40px; border:.5px white solid; background-color:#2db92d;text-decoration:none;color:white; padding:7px 7px;border-radius:9px;letter-spacing:1.5px;" %></li>
+  			</ul>
+
+		<% end %>
+	<% end %>
+
+
+<% end %>
+
+
+</div>
